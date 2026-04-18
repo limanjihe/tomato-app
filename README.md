@@ -293,6 +293,26 @@ export ELECTRON_MIRROR=https://npmmirror.com/mirrors/electron/
 - 确认 Vite 开发服务器是否已启动（http://localhost:5173）
 - 尝试重新运行 `npm run dev`
 
+### 控制台显示 "Autofill.enable failed" 错误
+
+**错误信息：**
+```
+"Request Autofill.enable failed. {"code":-32601,"message":"'Autofill.enable' wasn't found"}"
+```
+
+**原因：**
+- 这是 Chrome DevTools 自动填充功能的警告
+- Electron 的 DevTools 协议不支持 `Autofill.enable` 方法
+- 只有在打开 DevTools 时才会显示
+
+**影响：**
+- ✅ **无任何影响** - 应用功能完全正常
+- ✅ 可以安全忽略
+
+**解决方案（可选）：**
+1. **关闭 DevTools**：在 `electron/main.ts` 中注释掉 `mainWindow.webContents.openDevTools()`
+2. **过滤控制台错误**：在 DevTools 控制台中使用 Filter 功能隐藏这类错误
+
 ## 许可证
 
 MIT License
