@@ -66,16 +66,32 @@ cd tomato-app
 ```
 
 ### 2. 安装项目依赖
+
+#### Windows 系统（推荐使用国内镜像）
+```bash
+# 设置 Electron 镜像（可选，加速下载）
+export ELECTRON_MIRROR=https://npmmirror.com/mirrors/electron/
+
+# 安装依赖
+npm install
+```
+
+#### Ubuntu / Linux 系统
 ```bash
 npm install
 ```
 
-### 3. 开发模式
+### 3. 构建 Electron 主进程
+```bash
+npm run build:electron
+```
+
+### 4. 开发模式
 ```bash
 npm run dev
 ```
 
-### 4. 构建应用
+### 5. 构建应用
 
 ```bash
 # Windows
@@ -137,15 +153,145 @@ tomato-app/
 5. 在「任务」标签页添加待办任务
 6. 在「统计」标签页查看你的效率数据
 
+## 安装过程记录与问题解决
+
+### 初始问题分析
+
+在 Windows 系统上安装此项目时，可能会遇到以下问题：
+
+#### 问题1：better-sqlite3 编译失败
+
+**错误信息：**
+```
+No prebuilt binaries found (target=25.7.0 runtime=node arch=x64 libc= platform=win32)
+gyp ERR! find VS - missing any VC++ toolset
+```
+
+**原因：**
+- Node.js 版本过新 (v25.7.0)，better-sqlite3 没有对应的预编译二进制文件
+- 缺少 Visual C++ Build Tools，无法从源码编译
+
+**解决方案：**
+- 移除 better-sqlite3 依赖
+- 改用 Zustand 的 persist 中间件，使用 localStorage 进行本地存储
+- 这样就不需要编译原生模块，也不需要安装 Visual C++ Build Tools
+
+**实施步骤：**
+1. 从 `package.json` 的 `dependencies` 中移除 `"better-sqlite3": "^11.5.0"`
+2. 更新 README 中的技术栈说明
+3. 提交代码更改
+
+---
+
+#### 问题2：npm install 权限错误 (EPERM)
+
+**错误信息：**
+```
+Error: EPERM: operation not permitted, rmdir '.../node_modules/...'
+```
+
+**原因：**
+- 文件被其他进程占用（编辑器、杀毒软件等）
+- Windows 文件锁定机制
+
+**解决方案：**
+1. 关闭所有打开的编辑器（VS Code 等）
+2. 关闭可能占用文件的终端
+3. 临时关闭杀毒软件的实时扫描（可选）
+4. 删除 `node_modules` 和 `package-lock.json` 后重试
+5. 如仍有问题，以管理员身份运行终端
+
+---
+
+#### 问题3：Electron 下载失败 (ECONNRESET)
+
+**错误信息：**
+```
+RequestError: read ECONNRESET
+```
+
+**原因：**
+- 网络连接不稳定
+- Electron 二进制文件较大（~100MB+）
+- 从国外源下载速度慢
+
+**解决方案：使用国内镜像源
+
+**解决方案：使用国内镜像源**
+
+设置 Electron 镜像环境变量：
+```bash
+# Windows (Git Bash / WSL)
+export ELECTRON_MIRROR=https://npmmirror.com/mirrors/electron/
+
+# Windows (PowerShell)
+$env:ELECTRON_MIRROR="https://npmmirror.com/mirrors/electron/"
+
+# Windows (CMD)
+set ELECTRON_MIRROR=https://npmmirror.com/mirrors/electron/
+
+# Linux / macOS
+export ELECTRON_MIRROR=https://npmmirror.com/mirrors/electron/
+```
+
+设置后再运行 `npm install`
+
+---
+
+### 成功安装步骤总结（Windows）
+
+1. **准备环境**
+   - 安装 Node.js (推荐 v18/v20 LTS)
+   - 安装 Git
+
+2. **克隆项目**
+   ```bash
+   git clone https://github.com/limanjihe/tomato-app.git
+   cd tomato-app
+   ```
+
+3. **设置镜像（可选，推荐）**
+   ```bash
+   export ELECTRON_MIRROR=https://npmmirror.com/mirrors/electron/
+   ```
+
+4. **安装依赖**
+   ```bash
+   npm install
+   ```
+
+5. **构建主进程**
+   ```bash
+   npm run build:electron
+   ```
+
+6. **启动开发模式**
+   ```bash
+   npm run dev
+   ```
+
+---
+
 ## 常见问题
 
 ### npm install 遇到权限错误 (EPERM)
 - 关闭所有打开的编辑器或终端
 - 以管理员身份运行终端
 - 删除 `node_modules` 和 `package-lock.json` 后重试
+- 参考上方"安装过程记录"中的详细解决方案
+
+### Electron 下载失败 (ECONNRESET)
+- 设置国内镜像源：`export ELECTRON_MIRROR=https://npmmirror.com/mirrors/electron/`
+- 网络不稳定时多试几次
+- 参考上方"安装过程记录"中的详细解决方案
 
 ### 修改后没有生效
 检查是否在开发模式下，Vite 支持热模块替换 (HMR)，大多数更改会自动刷新。
+
+### 应用窗口没有显示
+- 检查终端是否有错误信息
+- 确认 Vite 开发服务器是否已启动（http://localhost:5173）
+- 尝试重新运行 `npm run dev`
 
 ## 许可证
 
