@@ -5,7 +5,7 @@
 ## 功能特性
 
 - ⏱️ **番茄钟计时**：25分钟专注工作，5分钟短休息
-- 🔄 **循环模式**：每4个番茄后进入15-30分钟长休息
+- 🔄 **循环模式**：每4个番茄后进入15分钟长休息
 - 📝 **任务管理**：创建、编辑、删除待办任务
 - 📊 **数据统计**：查看每日、每周的番茄完成情况
 - 🎨 **简洁界面**：基于 Ant Design 的美观 UI
@@ -15,10 +15,9 @@
 
 - **前端框架**：React 18 + TypeScript
 - **UI 组件**：Ant Design 5
-- **状态管理**：Zustand
+- **状态管理**：Zustand (含 persist 本地存储)
 - **桌面框架**：Electron
 - **构建工具**：Vite
-- **本地数据库**：better-sqlite3
 - **日期处理**：Day.js
 
 ## 环境要求
@@ -33,18 +32,6 @@
 2. **Git**
    - 下载地址：https://git-scm.com/download/win
    - 验证安装：`git --version`
-
-3. **Visual C++ Build Tools** (for better-sqlite3)
-   - 方式一：使用 winget 安装
-     ```powershell
-     winget install Microsoft.VisualStudio.2022.BuildTools
-     ```
-   - 方式二：下载安装
-     - 访问 https://visualstudio.microsoft.com/visual-cpp-build-tools/
-     - 下载并安装 "Desktop development with C++" 工作负载
-
-#### 可选软件
-- **Windows Terminal** (推荐)：https://aka.ms/terminal
 
 ### Ubuntu 系统
 
@@ -63,28 +50,11 @@
 2. **Git**
    ```bash
    sudo apt-get install -y git
-
-   # 验证安装
-   git --version
    ```
 
-3. **构建工具** (for better-sqlite3 和 Electron)
-   ```bash
-   sudo apt-get install -y build-essential python3 make gcc g++
-   ```
-
-4. **Electron 依赖**
+3. **Electron 运行时依赖**
    ```bash
    sudo apt-get install -y libgtk-3-0 libnss3 libasound2 libgbm1
-   ```
-
-5. **打包依赖** (for AppImage/deb)
-   ```bash
-   # AppImage
-   sudo apt-get install -y fuse libfuse2
-
-   # deb 包
-   sudo apt-get install -y dpkg fakeroot
    ```
 
 ## 快速开始
@@ -169,18 +139,10 @@ tomato-app/
 
 ## 常见问题
 
-### Windows 下 better-sqlite3 安装失败
-确保已安装 Visual C++ Build Tools，然后尝试：
-```bash
-npm install --global windows-build-tools
-npm rebuild better-sqlite3
-```
-
-### Ubuntu 下 Electron 无法启动
-确保已安装依赖：
-```bash
-sudo apt-get install libgtk-3-0 libnss3 libasound2 libgbm1
-```
+### npm install 遇到权限错误 (EPERM)
+- 关闭所有打开的编辑器或终端
+- 以管理员身份运行终端
+- 删除 `node_modules` 和 `package-lock.json` 后重试
 
 ### 修改后没有生效
 检查是否在开发模式下，Vite 支持热模块替换 (HMR)，大多数更改会自动刷新。
